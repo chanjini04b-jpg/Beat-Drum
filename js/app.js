@@ -21,31 +21,47 @@ class BeatDrumApp {
     }
 
     // 애플리케이션 설정
-    setup() {
+    async setup() {
         this.showLoading();
         
-        // 드럼 사운드가 로드될 때까지 대기
-        const checkSounds = setInterval(() => {
-            if (window.drumSounds && window.drumSounds.isReady()) {
-                clearInterval(checkSounds);
+        try {
+            // 드럼 사운드 시스템이 준비될 때까지 대기 (최대 10초)
+            if (window.drumSounds) {
+                const timeout = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('사운드 로드 타임아웃')), 10000)
+                );
+                
+                const soundsReady = window.drumSounds.isReady();
+                
+                await Promise.race([soundsReady, timeout]);
+                
                 this.initializeSequencer();
                 this.setupGlobalEvents();
                 this.setDefaultPatternLength();
                 this.loadDefaultPattern();
                 this.hideLoading();
                 this.isInitialized = true;
-                console.log('Beat Drum 애플리케이션이 성공적으로 초기화되었습니다.');
+                console.log('✅ Beat Drum 애플리케이션이 성공적으로 초기화되었습니다.');
+            } else {
+                throw new Error('DrumSounds 인스턴스를 찾을 수 없습니다');
             }
-        }, 100);
-
-        // 10초 후에도 로드되지 않으면 타임아웃
-        setTimeout(() => {
-            if (!this.isInitialized) {
-                clearInterval(checkSounds);
-                this.hideLoading();
-                this.showError('드럼 사운드 로드에 실패했습니다. 페이지를 새로고침해 주세요.');
+        } catch (error) {
+            console.error('❌ 애플리케이션 초기화 오류:', error);
+            this.hideLoading();
+            
+            // 오류가 발생해도 기본 기능은 사용할 수 있도록 함
+            if (window.drumSounds && window.drumSounds.isReadySync()) {
+                console.log('🔄 기본 기능으로 초기화 시도...');
+                this.initializeSequencer();
+                this.setupGlobalEvents();
+                this.setDefaultPatternLength();
+                this.loadDefaultPattern();
+                this.isInitialized = true;
+                this.showError('일부 기능에 제한이 있을 수 있습니다.');
+            } else {
+                this.showError('애플리케이션 초기화에 실패했습니다. 페이지를 새로고침해 주세요.');
             }
-        }, 10000);
+        }
     }
 
     // 시퀀서 초기화
