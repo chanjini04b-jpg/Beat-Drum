@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beat Drum - 실시간 드럼 비트 생성기</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <header class="header">
+            <h1 class="title">🥁 Beat Drum</h1>
+            <p class="subtitle">실시간 드럼 비트 생성기</p>
+        </header>
+
+        <!-- 컨트롤 패널 -->
+        <div class="controls">
+            <div class="playback-controls">
+                <button id="playBtn" class="btn btn-play">▶️ Play</button>
+                <button id="pauseBtn" class="btn btn-pause">⏸️ Pause</button>
+                <button id="stopBtn" class="btn btn-stop">⏹️ Stop</button>
+            </div>
+            
+            <div class="tempo-control">
+                <div class="bpm-display">
+                    <div class="bpm-label">TEMPO</div>
+                    <div class="bpm-value-container">
+                        <span id="bpmValue" class="bpm-value">120</span>
+                        <span class="bpm-unit">BPM</span>
+                    </div>
+                    <div class="bpm-genre" id="bpmGenre">Pop/Rock</div>
+                </div>
+                
+                <div class="bpm-control-container">
+                    <div class="bpm-knob-container">
+                        <div class="bpm-knob" id="bpmKnob">
+                            <div class="knob-indicator"></div>
+                            <div class="knob-center"></div>
+                        </div>
+                        <div class="bpm-range-labels">
+                            <span class="range-label min">60</span>
+                            <span class="range-label max">200</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bpm-buttons">
+                        <button class="bpm-btn" id="bpmDown">−</button>
+                        <button class="bpm-btn" id="bpmUp">+</button>
+                    </div>
+                </div>
+                
+                <div class="bpm-visualizer">
+                    <div class="beat-indicator" id="beatIndicator">
+                        <div class="beat-pulse"></div>
+                    </div>
+                </div>
+                
+                <input type="range" id="bpmSlider" min="60" max="200" value="120" class="bpm-slider-hidden">
+            </div>
+
+            <div class="pattern-controls">
+                <div class="pattern-length-control">
+                    <label>📏 패턴 길이</label>
+                    <div class="pattern-length-buttons">
+                        <button class="pattern-length-btn active" data-steps="16" data-bars="1">1마디</button>
+                        <button class="pattern-length-btn" data-steps="32" data-bars="2">2마디</button>
+                        <button class="pattern-length-btn" data-steps="64" data-bars="4">4마디</button>
+                        <button class="pattern-length-btn" data-steps="128" data-bars="8">8마디</button>
+                    </div>
+                    <div class="pattern-info">
+                        <span id="patternInfo">16스텝 (1마디)</span>
+                    </div>
+                </div>
+                
+                <div class="pattern-actions">
+                    <button id="clearBtn" class="btn btn-secondary">🗑️ Clear</button>
+                    <button id="randomBtn" class="btn btn-secondary">🎲 Random</button>
+                </div>
+            </div>
+
+            <div class="save-controls">
+                <div class="save-group">
+                    <label>💾 저장/불러오기</label>
+                    <div class="save-buttons">
+                        <button id="saveBtn" class="btn btn-save">💾 저장</button>
+                        <button id="loadBtn" class="btn btn-load">📁 불러오기</button>
+                        <button id="downloadBtn" class="btn btn-download">⬇️ 다운로드</button>
+                    </div>
+                </div>
+                
+                <div class="preset-group">
+                    <label>🎵 프리셋</label>
+                    <div class="preset-slots">
+                        <button class="preset-btn" data-slot="1">1</button>
+                        <button class="preset-btn" data-slot="2">2</button>
+                        <button class="preset-btn" data-slot="3">3</button>
+                        <button class="preset-btn" data-slot="4">4</button>
+                        <button class="preset-btn" data-slot="5">5</button>
+                    </div>
+                </div>
+                
+                <input type="file" id="fileInput" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <!-- 패턴 길이 컨트롤 -->
+        <div class="pattern-length-control">
+            <label>패턴 길이:</label>
+            <button class="length-button active" data-measures="1">1마디 (16스텝)</button>
+            <button class="length-button" data-measures="2">2마디 (32스텝)</button>
+            <button class="length-button" data-measures="4">4마디 (64스텝)</button>
+            <button class="length-button" data-measures="8">8마디 (128스텝)</button>
+        </div>
+
+        <!-- 동적 시퀀서 그리드 -->
+        <div class="sequencer" id="sequencer">
+            <!-- JavaScript에서 동적으로 생성됨 -->
+        </div>
+
+        <!-- 현재 스텝 표시기 -->
+        <div class="current-step-indicator">
+            <div class="step-progress"></div>
+        </div>
+
+        <!-- 정보 패널 -->
+        <div class="info-panel">
+            <div class="status">
+                <span id="statusText">Ready</span> | 
+                Step: <span id="currentStep">-</span> | 
+                BPM: <span id="currentBpm">120</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/drumSounds.js"></script>
+    <script src="js/sequencer.js"></script>
+    <script src="js/patternStorage.js"></script>
+    <script src="js/bpmController.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
