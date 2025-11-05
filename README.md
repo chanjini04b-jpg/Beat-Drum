@@ -5,6 +5,7 @@
 ## 🚀 사용 방법
 
 ### 1. 로컬에서 실행
+
 ```bash
 # 간단한 HTTP 서버 실행 (권장)
 npx http-server
@@ -13,6 +14,7 @@ python -m http.server 8000
 ```
 
 ### 2. 직접 파일 열기
+
 - `index.html` 파일을 브라우저에서 직접 열 수 있습니다
 - 단, 실제 사운드 파일 로드는 HTTP 서버 환경에서만 가능합니다
 
@@ -45,7 +47,7 @@ Beat-Drum/
 `assets/sounds/` 폴더에 실제 드럼 사운드 파일을 추가하면 더 현실적인 사운드를 사용할 수 있습니다:
 
 - `kick.wav` - 킥드럼
-- `snare.wav` - 스네어드럼  
+- `snare.wav` - 스네어드럼
 - `hihat.wav` - 하이햇
 - 등등...
 

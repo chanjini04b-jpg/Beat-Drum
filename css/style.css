@@ -74,30 +74,48 @@ button,
     }
 }
 
-/* 모바일에서 12개 트랙 표시 보장 */
-@media (max-width: 768px) and (orientation: portrait) {
+/* 모바일에서 12개 트랙 표시 보장 - 간소화 */
+@media (max-width: 768px) {
     .sequencer {
-        min-height: 70vh !important;
-        max-height: 95vh !important;
+        height: 60vh !important;
+        max-height: 60vh !important;
+        overflow-y: scroll !important;
+        -webkit-overflow-scrolling: touch !important;
+        border: 2px solid rgba(78, 205, 196, 0.3) !important; /* 디버깅용 테두리 */
     }
     
     .track {
-        flex-shrink: 0; /* 트랙이 축소되지 않도록 */
+        flex-shrink: 0 !important; /* 트랙이 축소되지 않도록 */
+        min-height: 60px !important; /* 트랙 최소 높이 보장 */
+    }
+
+    /* 모바일 스크롤바 강화 */
+    .sequencer::-webkit-scrollbar {
+        width: 16px !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+    }
+    
+    .sequencer::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.3) !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    .sequencer::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #ff6b6b, #4ecdc4) !important;
+        border-radius: 8px !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        min-height: 50px !important;
     }
 }
 
-@media (max-width: 480px) and (orientation: portrait) {
+@media (max-width: 480px) {
     .sequencer {
-        min-height: 65vh !important;
-        max-height: 90vh !important;
-    }
-}
-
-/* 가로 모드에서 더 많은 공간 활용 */
-@media (max-width: 768px) and (orientation: landscape) {
-    .sequencer {
-        min-height: 80vh !important;
-        max-height: 95vh !important;
+        height: 55vh !important;
+        max-height: 55vh !important;
+        overflow-y: scroll !important;
+        -webkit-overflow-scrolling: touch !important;
+        border: 2px solid rgba(255, 107, 107, 0.5) !important; /* 디버깅용 테두리 */
     }
 }
 
@@ -1440,9 +1458,11 @@ body {
 
     .track {
         flex-direction: column;
-        gap: 4px; /* 간격 줄임 */
-        padding: 6px; /* 패딩 줄임 */
-        margin-bottom: 3px; /* 마진 줄임 */
+        gap: 3px !important; /* 간격 더 줄임 */
+        padding: 4px !important; /* 패딩 더 줄임 */
+        margin-bottom: 1px !important; /* 마진 더 줄임 */
+        min-height: 50px !important; /* 최소 높이 보장 */
+        flex-shrink: 0 !important; /* 축소 방지 */
     }
 
     .track-label {
@@ -1510,47 +1530,48 @@ body {
         font-size: 1.2rem;
     }
 
-    /* 12트랙 컨테이너 스크롤 개선 */
+    /* 12트랙 컨테이너 - 모바일 최적화 */
     .sequencer {
-        max-height: 90vh; /* 높이를 더 확장 */
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding-right: 12px;
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-        min-height: 600px; /* 12개 트랙을 위한 더 충분한 높이 */
-        height: auto; /* 자동 높이 설정 */
-        scrollbar-width: thin;
-        scrollbar-color: #4ecdc4 rgba(255, 255, 255, 0.15);
+        height: 70vh !important; /* 더 높은 고정 높이 */
+        max-height: 70vh !important;
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
+        padding-right: 15px !important;
+        scroll-behavior: smooth !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: thick !important;
+        scrollbar-color: #4ecdc4 rgba(255, 255, 255, 0.3) !important;
+        background: rgba(255, 255, 255, 0.02) !important; /* 디버깅용 배경 */
     }
 
     .sequencer::-webkit-scrollbar {
-        width: 14px; /* 스크롤바를 더 넓게 */
+        width: 16px !important; /* 스크롤바를 더 넓게 */
+        background: rgba(0, 0, 0, 0.1) !important;
     }
 
     .sequencer::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.2); /* 트랙을 더 밝게 */
-        border-radius: 7px;
-        margin: 8px 0;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.4) !important; /* 트랙을 더 밝게 */
+        border-radius: 8px !important;
+        margin: 5px 0 !important;
+        border: 2px solid rgba(78, 205, 196, 0.3) !important;
     }
 
     .sequencer::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #4ecdc4, #44a08d);
-        border-radius: 7px;
-        border: 2px solid rgba(30, 30, 30, 0.3);
-        box-shadow: 0 2px 12px rgba(78, 205, 196, 0.4);
-        min-height: 40px; /* 최소 높이 설정 */
+        background: linear-gradient(180deg, #ff6b6b, #4ecdc4) !important;
+        border-radius: 8px !important;
+        border: 2px solid rgba(255, 255, 255, 0.5) !important;
+        box-shadow: 0 3px 15px rgba(78, 205, 196, 0.6) !important;
+        min-height: 50px !important; /* 최소 높이 설정 */
     }
 
     .sequencer::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #5fd9d1, #4bb5a3);
-        box-shadow: 0 4px 16px rgba(78, 205, 196, 0.6);
+        background: linear-gradient(180deg, #ff5252, #5fd9d1) !important;
+        box-shadow: 0 5px 20px rgba(255, 107, 107, 0.8) !important;
     }
 
     .sequencer::-webkit-scrollbar-thumb:active {
-        background: linear-gradient(180deg, #3fc2ba, #359287);
-        box-shadow: 0 2px 8px rgba(78, 205, 196, 0.8);
+        background: linear-gradient(180deg, #e91e63, #3fc2ba) !important;
+        box-shadow: 0 2px 10px rgba(233, 30, 99, 0.9) !important;
     }
 
     /* 스텝 넘버 모바일 최적화 */
@@ -1591,12 +1612,16 @@ body {
 
     /* 소형 모바일에서 시퀀서 최적화 */
     .sequencer {
-        max-height: 85vh; /* 소형 모바일에서도 더 높은 높이 */
-        padding-right: 10px;
-        min-height: 550px; /* 소형 모바일에서도 12개 트랙 표시 가능한 더 높은 높이 */
-        height: auto; /* 자동 높이 설정 */
-        scrollbar-width: thin;
-        scrollbar-color: #4ecdc4 rgba(255, 255, 255, 0.1);
+        height: 65vh !important; /* 더 높은 고정 높이 */
+        max-height: 65vh !important;
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
+        padding-right: 15px !important;
+        scroll-behavior: smooth !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: thick !important;
+        scrollbar-color: #ff6b6b rgba(255, 255, 255, 0.3) !important;
+        background: rgba(255, 107, 107, 0.02) !important; /* 디버깅용 배경 */
     }
 
     .sequencer::-webkit-scrollbar {
@@ -1624,9 +1649,11 @@ body {
     }
 
     .track {
-        padding: 4px; /* 더 컴팩트하게 */
-        margin-bottom: 2px; /* 마진 더 줄임 */
-        gap: 3px; /* 간격 더 줄임 */
+        padding: 3px !important; /* 더 컴팩트하게 */
+        margin-bottom: 1px !important; /* 마진 더 줄임 */
+        gap: 2px !important; /* 간격 더 줄임 */
+        min-height: 45px !important; /* 최소 높이 보장 */
+        flex-shrink: 0 !important; /* 축소 방지 */
     }
 
     .track-name {
