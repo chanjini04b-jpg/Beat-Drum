@@ -25,21 +25,34 @@ class DrumSounds {
 
     // 비동기 초기화
     async initialize() {
-        try {
-            this.initAudioContext();
-            
-            if (this.audioContext) {
-                // 실제 오디오 파일 로드 시도
-                await this.loadRealSounds();
-                console.log('🎵 Beat Drum 사운드 시스템 초기화 완료');
-            } else {
-                console.warn('⚠️ Web Audio API를 사용할 수 없습니다');
+        return new Promise((resolve, reject) => {
+            try {
+                this.initAudioContext();
+                
+                if (this.audioContext) {
+                    // 실제 오디오 파일 로드 시도 (비동기)
+                    this.loadRealSounds()
+                        .then(() => {
+                            console.log('🎵 Beat Drum 사운드 시스템 초기화 완료');
+                            resolve();
+                        })
+                        .catch((error) => {
+                            console.warn('⚠️ 사운드 로드 실패, 신스 사운드 사용:', error.message);
+                            this.createDummySounds();
+                            resolve(); // 실패해도 resolve (앱은 계속 작동)
+                        });
+                } else {
+                    console.warn('⚠️ Web Audio API를 사용할 수 없습니다');
+                    this.createDummySounds();
+                    resolve();
+                }
+            } catch (error) {
+                console.error('❌ 사운드 시스템 초기화 실패:', error);
+                // 오류가 발생해도 더미 사운드라도 생성
+                this.createDummySounds();
+                resolve(); // 항상 resolve로 앱 진행
             }
-        } catch (error) {
-            console.error('❌ 사운드 시스템 초기화 실패:', error);
-            // 오류가 발생해도 더미 사운드라도 생성
-            this.createDummySounds();
-        }
+        });
     }
 
     // 오디오 컨텍스트 초기화
@@ -379,21 +392,32 @@ class DrumSounds {
 
     // 실제 오디오 파일들을 로드 시도
     async loadRealSounds() {
-        if (!this.audioContext) {
-            console.warn('⚠️ AudioContext가 없어 신스 사운드만 사용합니다');
-            this.createDummySounds();
-            return;
-        }
+        return new Promise(async (resolve) => {
+            try {
+                if (!this.audioContext) {
+                    console.warn('⚠️ AudioContext가 없어 신스 사운드만 사용합니다');
+                    this.createDummySounds();
+                    resolve();
+                    return;
+                }
 
-        // 실제 사운드 파일 로딩이 비활성화된 경우
-        if (this.disableRealSounds) {
-            console.log('🎹 실제 사운드 파일 로딩이 비활성화되어 신스 사운드를 사용합니다');
-            this.createDummySounds();
-            return;
-        }
+                // 실제 사운드 파일 로딩이 비활성화된 경우
+                if (this.disableRealSounds) {
+                    console.log('🎹 실제 사운드 파일 로딩이 비활성화되어 신스 사운드를 사용합니다');
+                    this.createDummySounds();
+                    resolve();
+                    return;
+                }
 
-        // 동적으로 사운드 폴더 경로 찾기
-        const soundsPath = await this.findSoundsPath();
+                // 타임아웃 설정 (5초)
+                const timeout = setTimeout(() => {
+                    console.log('⏰ 사운드 로딩 타임아웃, 신스 사운드 사용');
+                    this.createDummySounds();
+                    resolve();
+                }, 5000);
+
+                // 동적으로 사운드 폴더 경로 찾기
+                const soundsPath = await this.findSoundsPath();
 
         // 실제 사운드 파일이 있는지 먼저 확인
         const hasRealSounds = await this.checkSoundFilesExist(soundsPath);
@@ -456,13 +480,19 @@ class DrumSounds {
                 console.log(`🎵 ${loadedCount}/${totalSounds}개의 실제 드럼 사운드 로드됨`);
             }
 
-            // 로드되지 않은 사운드들을 위해 신스 사운드 생성
-            this.createDummySounds();
+                // 로드되지 않은 사운드들을 위해 신스 사운드 생성
+                this.createDummySounds();
 
-        } catch (error) {
-            console.warn('⚠️ 사운드 파일 로드 중 오류 발생, 신스 사운드를 사용합니다:', error.message);
-            this.createDummySounds();
-        }
+                clearTimeout(timeout);
+                resolve();
+
+            } catch (error) {
+                console.warn('⚠️ 사운드 파일 로드 중 오류 발생, 신스 사운드를 사용합니다:', error.message);
+                this.createDummySounds();
+                clearTimeout(timeout);
+                resolve();
+            }
+        });
     }
 
     // 현재 환경이 로컬 파일인지 확인
