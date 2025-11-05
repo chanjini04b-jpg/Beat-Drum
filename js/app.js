@@ -25,6 +25,9 @@ class BeatDrumApp {
         this.showLoading();
         
         try {
+            // 랜딩페이지 상호작용 설정
+            this.setupLandingPageInteractions();
+            
             // 드럼 사운드 시스템이 준비될 때까지 대기 (최대 10초)
             if (window.drumSounds) {
                 const timeout = new Promise((_, reject) => 
@@ -42,6 +45,10 @@ class BeatDrumApp {
                 this.hideLoading();
                 this.isInitialized = true;
                 console.log('✅ Beat Drum 애플리케이션이 성공적으로 초기화되었습니다.');
+                
+                // 초기화 완료 후 사용자 경험 개선 및 가이드 표시
+                this.enhanceUserExperience();
+                this.showQuickGuide();
             } else {
                 throw new Error('DrumSounds 인스턴스를 찾을 수 없습니다');
             }
@@ -84,6 +91,187 @@ class BeatDrumApp {
         } else {
             throw new Error('DrumSounds가 초기화되지 않았습니다.');
         }
+    }
+
+    // 랜딩페이지 상호작용 설정
+    setupLandingPageInteractions() {
+        // CTA 버튼 클릭 이벤트
+        const startButton = document.getElementById('startButton');
+        if (startButton) {
+            startButton.addEventListener('click', () => {
+                this.scrollToMainControls();
+            });
+        }
+
+        // 가이드 닫기 버튼
+        const guideClose = document.getElementById('guideClose');
+        if (guideClose) {
+            guideClose.addEventListener('click', () => {
+                this.hideQuickGuide();
+            });
+        }
+
+        // 가이드 배경 클릭으로 닫기
+        const quickGuide = document.getElementById('quickGuide');
+        if (quickGuide) {
+            quickGuide.addEventListener('click', (e) => {
+                if (e.target === quickGuide) {
+                    this.hideQuickGuide();
+                }
+            });
+        }
+
+        // 첫 방문 감지 및 안내
+        this.checkFirstVisit();
+    }
+
+    // 메인 컨트롤로 부드럽게 스크롤
+    scrollToMainControls() {
+        const mainControls = document.getElementById('mainControls');
+        if (mainControls) {
+            mainControls.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            // 스크롤 완료 후 작은 애니메이션 효과
+            setTimeout(() => {
+                mainControls.style.animation = 'fadeInUp 0.5s ease';
+            }, 500);
+        }
+    }
+
+    // 빠른 가이드 표시
+    showQuickGuide() {
+        const quickGuide = document.getElementById('quickGuide');
+        const isFirstVisit = !localStorage.getItem('beatdrum_visited');
+        
+        if (quickGuide && isFirstVisit) {
+            quickGuide.style.display = 'flex';
+            quickGuide.style.animation = 'fadeInUp 0.3s ease';
+            
+            // 첫 방문 기록
+            localStorage.setItem('beatdrum_visited', 'true');
+        }
+    }
+
+    // 빠른 가이드 숨기기
+    hideQuickGuide() {
+        const quickGuide = document.getElementById('quickGuide');
+        if (quickGuide) {
+            quickGuide.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => {
+                quickGuide.style.display = 'none';
+            }, 300);
+        }
+    }
+
+    // 첫 방문 확인
+    checkFirstVisit() {
+        const isFirstVisit = !localStorage.getItem('beatdrum_visited');
+        const startButton = document.getElementById('startButton');
+        
+        if (isFirstVisit && startButton) {
+            // 첫 방문자를 위한 버튼 애니메이션
+            startButton.style.animation = 'bounce 2s ease-in-out infinite';
+            
+            // 3초 후 애니메이션 중지
+            setTimeout(() => {
+                startButton.style.animation = '';
+            }, 6000);
+        }
+    }
+
+    // 사용자 인터랙션 개선
+    enhanceUserExperience() {
+        // 터치 피드백 개선
+        this.addTouchFeedback();
+        
+        // 스크롤 위치에 따른 헤더 효과
+        this.setupScrollEffects();
+        
+        // PWA 기능 추가
+        this.setupPWAFeatures();
+    }
+
+    // 터치 피드백 추가
+    addTouchFeedback() {
+        document.querySelectorAll('button, .step').forEach(element => {
+            element.addEventListener('touchstart', () => {
+                element.style.transform = 'scale(0.95)';
+            });
+            
+            element.addEventListener('touchend', () => {
+                setTimeout(() => {
+                    element.style.transform = '';
+                }, 100);
+            });
+        });
+    }
+
+    // 스크롤 효과 설정
+    setupScrollEffects() {
+        let ticking = false;
+        
+        const handleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const scrollY = window.scrollY;
+                    const heroHeader = document.querySelector('.hero-header');
+                    
+                    if (heroHeader) {
+                        const opacity = Math.max(0, 1 - scrollY / 300);
+                        const scale = Math.max(0.8, 1 - scrollY / 1000);
+                        
+                        heroHeader.style.opacity = opacity;
+                        heroHeader.style.transform = `scale(${scale})`;
+                    }
+                    
+                    ticking = false;
+                });
+                
+                ticking = true;
+            }
+        };
+        
+        window.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    // PWA 기능 설정
+    setupPWAFeatures() {
+        // 설치 프롬프트 처리
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 설치 버튼 표시 로직 (필요시 추가)
+            console.log('💡 앱 설치 가능');
+        });
+        
+        // 온라인/오프라인 상태 표시
+        this.setupNetworkStatus();
+    }
+
+    // 네트워크 상태 모니터링
+    setupNetworkStatus() {
+        const updateNetworkStatus = () => {
+            const isOnline = navigator.onLine;
+            const statusElement = document.getElementById('statusText');
+            
+            if (statusElement && !isOnline) {
+                statusElement.textContent = 'Offline Mode';
+                statusElement.style.color = '#ff6b6b';
+            } else if (statusElement && isOnline) {
+                statusElement.textContent = 'Ready';
+                statusElement.style.color = '';
+            }
+        };
+        
+        window.addEventListener('online', updateNetworkStatus);
+        window.addEventListener('offline', updateNetworkStatus);
+        updateNetworkStatus(); // 초기 상태 설정
     }
 
     // 전역 이벤트 설정

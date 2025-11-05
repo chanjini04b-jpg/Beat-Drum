@@ -2,22 +2,90 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beat Drum - 실시간 드럼 비트 생성기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    
+    <!-- SEO 최적화 -->
+    <title>Beat Drum - 무료 온라인 드럼 머신 | 실시간 리듬 생성기</title>
+    <meta name="description" content="브라우저에서 바로 사용하는 무료 드럼 머신! 12가지 드럼 사운드로 실시간 비트를 만들어보세요. 모바일과 데스크톱 모두 지원.">
+    <meta name="keywords" content="드럼머신, 드럼패드, 온라인드럼, 리듬생성기, 무료드럼, 웹드럼, beat maker, drum machine">
+    <meta name="author" content="Beat Drum">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:title" content="Beat Drum - 무료 온라인 드럼 머신">
+    <meta property="og:description" content="브라우저에서 바로 사용하는 무료 드럼 머신! 실시간으로 드럼 비트를 만들어보세요.">
+    <meta property="og:image" content="">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="">
+    <meta property="twitter:title" content="Beat Drum - 무료 온라인 드럼 머신">
+    <meta property="twitter:description" content="브라우저에서 바로 사용하는 무료 드럼 머신! 실시간으로 드럼 비트를 만들어보세요.">
+    <meta property="twitter:image" content="">
+    
+    <!-- 모바일 최적화 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1e1e1e">
+    
     <!-- 폴더 이동 시에도 상대 경로가 정상 작동하도록 base 설정 -->
     <base href="./">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/style.css" as="style">
     <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥁</text></svg>">
 </head>
 <body>
     <div class="container">
-        <!-- 헤더 -->
-        <header class="header">
-            <h1 class="title">🥁 Beat Drum</h1>
-            <p class="subtitle">실시간 드럼 비트 생성기</p>
+        <!-- 히어로 헤더 -->
+        <header class="hero-header">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="hero-icon">🥁</span>
+                    <span class="title-main">Beat Drum</span>
+                </h1>
+                <p class="hero-subtitle">브라우저에서 바로 만드는 드럼 비트</p>
+                <div class="hero-features">
+                    <span class="feature-tag">🎵 12가지 드럼 사운드</span>
+                    <span class="feature-tag">📱 모바일 지원</span>
+                    <span class="feature-tag">💾 패턴 저장</span>
+                </div>
+                <button class="cta-button" id="startButton">
+                    <span class="cta-text">지금 시작하기</span>
+                    <span class="cta-icon">🎶</span>
+                </button>
+            </div>
         </header>
 
+        <!-- 간단 사용법 -->
+        <section class="quick-guide" id="quickGuide" style="display: none;">
+            <div class="guide-content">
+                <h3 class="guide-title">🎯 간단한 사용법</h3>
+                <div class="guide-steps">
+                    <div class="guide-step">
+                        <span class="step-number">1</span>
+                        <span class="step-text">BPM을 조정하세요</span>
+                    </div>
+                    <div class="guide-step">
+                        <span class="step-number">2</span>
+                        <span class="step-text">드럼 패드를 터치하여 리듬을 만드세요</span>
+                    </div>
+                    <div class="guide-step">
+                        <span class="step-number">3</span>
+                        <span class="step-text">▶️ Play 버튼으로 재생하세요</span>
+                    </div>
+                </div>
+                <button class="guide-close" id="guideClose">시작하기 ✨</button>
+            </div>
+        </section>
+
         <!-- TEMPO 컨트롤 (상단 배치) -->
-        <div class="controls">
+        <div class="controls" id="mainControls">
             <div class="tempo-control">
                 <div class="bpm-display">
                     <div class="bpm-label">TEMPO</div>
