@@ -21,30 +21,45 @@ class DrumSounds {
         // 실제 사운드 파일 로딩을 비활성화 (404 오류 방지)
         this.disableRealSounds = true; // 실제 파일이 있으면 false로 설정
         this.initializationPromise = this.initialize();
+        
+        // 모바일 환경 감지
+        this.isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     }
 
     // 비동기 초기화
     async initialize() {
         try {
+            // 모바일 터치 최적화 활성화
+            this.enableMobileTouchOptimization();
+            
             this.initAudioContext();
             
             if (this.audioContext) {
                 // 실제 오디오 파일 로드 시도 (비블로킹)
                 this.loadRealSounds().catch((error) => {
                     console.warn('⚠️ 비동기 사운드 로드 실패:', error.message);
+                    // 실패해도 더미 사운드는 생성
+                    this.createDummySounds();
                 });
+                
+                // 기본 더미 사운드 즉시 생성 (모바일 호환성)
+                this.createDummySounds();
+                this.isLoaded = true;
                 
                 console.log('🎵 Beat Drum 사운드 시스템 초기화 완료');
                 return Promise.resolve();
             } else {
                 console.warn('⚠️ Web Audio API를 사용할 수 없습니다');
                 this.createDummySounds();
+                this.isLoaded = true;
                 return Promise.resolve();
             }
         } catch (error) {
             console.error('❌ 사운드 시스템 초기화 실패:', error);
             // 오류가 발생해도 더미 사운드라도 생성
             this.createDummySounds();
+            this.isLoaded = true;
             return Promise.resolve(); // 항상 resolve로 앱 진행
         }
     }
@@ -579,6 +594,75 @@ class DrumSounds {
     setVolume(soundName, volume) {
         // 향후 구현 예정
         console.log(`${soundName} 볼륨을 ${volume}으로 설정`);
+    }
+
+    // 동기적 준비 상태 확인 (모바일 호환성)
+    isReadySync() {
+        try {
+            // 기본 사운드가 하나라도 있으면 준비된 것으로 간주
+            return this.sounds.kick !== null || this.isLoaded;
+        } catch (error) {
+            console.warn('⚠️ 준비 상태 확인 중 오류:', error.message);
+            return false;
+        }
+    }
+
+    // 모바일 친화적 AudioContext 활성화
+    resumeAudioContext() {
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+            this.audioContext.resume().then(() => {
+                console.log('🎵 AudioContext 재개됨');
+            }).catch(error => {
+                console.warn('⚠️ AudioContext 재개 실패:', error.message);
+            });
+        }
+    }
+
+    // 모바일 터치 이벤트 최적화
+    enableMobileTouchOptimization() {
+        if (this.isMobile) {
+            document.addEventListener('touchstart', () => {
+                this.resumeAudioContext();
+            }, { once: true, passive: true });
+
+            // iOS 특화 최적화
+            if (this.isIOS) {
+                // iOS에서 Web Audio API 활성화를 위한 더미 사운드 재생
+                document.addEventListener('touchend', () => {
+                    if (this.audioContext) {
+                        const buffer = this.audioContext.createBuffer(1, 1, 22050);
+                        const source = this.audioContext.createBufferSource();
+                        source.buffer = buffer;
+                        source.connect(this.audioContext.destination);
+                        source.start(0);
+                    }
+                }, { once: true });
+            }
+        }
+    }
+
+    // 오류 복구 시도
+    attemptRecovery() {
+        console.log('🔄 사운드 시스템 복구 시도...');
+        
+        try {
+            // AudioContext 재생성 시도
+            if (!this.audioContext || this.audioContext.state === 'closed') {
+                this.initAudioContext();
+            }
+
+            // 기본 사운드가 없으면 더미 사운드 생성
+            if (!this.sounds.kick) {
+                this.createDummySounds();
+            }
+
+            this.isLoaded = true;
+            console.log('✅ 사운드 시스템 복구 완료');
+            return true;
+        } catch (error) {
+            console.error('❌ 사운드 시스템 복구 실패:', error);
+            return false;
+        }
     }
 }
 

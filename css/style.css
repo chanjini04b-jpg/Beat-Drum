@@ -36,6 +36,44 @@ button,
     cursor: pointer;
 }
 
+/* 모바일 터치 최적화 */
+.mobile-device .step {
+    min-height: 44px !important;
+    min-width: 44px !important;
+}
+
+.mobile-device .track-play-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+}
+
+/* iOS 특화 최적화 */
+.ios-device {
+    -webkit-overflow-scrolling: touch;
+}
+
+.ios-device .sequencer {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 터치 피드백 강화 */
+@media (hover: none) {
+    .step:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+    
+    .track-play-btn:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+    
+    button:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+}
+
 /* 접근성 개선 */
 @media (prefers-reduced-motion: reduce) {
     * {

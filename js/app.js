@@ -25,39 +25,33 @@ class BeatDrumApp {
         this.showLoading();
         
         try {
+            // 모바일 환경 감지 및 최적화
+            this.detectMobileEnvironment();
+            
             // 랜딩페이지 상호작용 설정
             this.setupLandingPageInteractions();
             
-            // 드럼 사운드 시스템이 준비될 때까지 대기 (최대 10초)
-            if (window.drumSounds) {
-                const timeout = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('사운드 로드 타임아웃')), 10000)
-                );
-                
-                const soundsReady = window.drumSounds.isReady();
-                
-                await Promise.race([soundsReady, timeout]);
-                
-                this.initializeSequencer();
-                this.setupGlobalEvents();
-                this.setDefaultPatternLength();
-                this.loadDefaultPattern();
-                this.hideLoading();
-                this.isInitialized = true;
-                console.log('✅ Beat Drum 애플리케이션이 성공적으로 초기화되었습니다.');
-                
-                // 초기화 완료 후 사용자 경험 개선 및 가이드 표시
-                this.enhanceUserExperience();
+            // 드럼 사운드 시스템 초기화 (모바일 친화적)
+            await this.initializeSoundSystem();
+            
+            // 시퀀서 및 UI 초기화
+            this.initializeSequencer();
+            this.setupGlobalEvents();
+            this.setDefaultPatternLength();
+            this.loadDefaultPattern();
+            this.hideLoading();
+            this.isInitialized = true;
+            console.log('✅ Beat Drum 애플리케이션이 성공적으로 초기화되었습니다.');
+            
+            // 초기화 완료 후 사용자 경험 개선 및 가이드 표시
+            this.enhanceUserExperience();
                 this.showQuickGuide();
-            } else {
-                throw new Error('DrumSounds 인스턴스를 찾을 수 없습니다');
-            }
         } catch (error) {
             console.error('❌ 애플리케이션 초기화 오류:', error);
             this.hideLoading();
             
             // 오류가 발생해도 기본 기능은 사용할 수 있도록 함
-            if (window.drumSounds && window.drumSounds.isReadySync()) {
+            try {
                 console.log('🔄 기본 기능으로 초기화 시도...');
                 this.initializeSequencer();
                 this.setupGlobalEvents();
@@ -65,10 +59,88 @@ class BeatDrumApp {
                 this.loadDefaultPattern();
                 this.isInitialized = true;
                 this.showError('일부 기능에 제한이 있을 수 있습니다.');
-            } else {
+            } catch (fallbackError) {
+                console.error('❌ 대체 초기화도 실패:', fallbackError);
                 this.showError('애플리케이션 초기화에 실패했습니다. 페이지를 새로고침해 주세요.');
             }
         }
+    }
+
+    // 모바일 환경 감지 및 최적화
+    detectMobileEnvironment() {
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        if (isMobile || isTouchDevice) {
+            document.body.classList.add('mobile-device');
+            console.log('📱 모바일 환경 감지됨');
+            
+            // 모바일 최적화 설정
+            this.setupMobileOptimizations();
+        }
+    }
+
+    // 모바일 최적화 설정
+    setupMobileOptimizations() {
+        // 터치 이벤트 최적화
+        document.addEventListener('touchstart', function() {}, { passive: true });
+        
+        // 뷰포트 메타 태그 확인 및 설정
+        let viewport = document.querySelector('meta[name=viewport]');
+        if (!viewport) {
+            viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            viewport.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
+            document.head.appendChild(viewport);
+        }
+
+        // iOS Safari 특화 최적화
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            document.body.classList.add('ios-device');
+            
+            // iOS에서 AudioContext 초기화 개선
+            document.addEventListener('touchend', () => {
+                if (window.drumSounds && window.drumSounds.audioContext) {
+                    window.drumSounds.audioContext.resume();
+                }
+            }, { once: true });
+        }
+    }
+
+    // 사운드 시스템 초기화 (모바일 친화적)
+    async initializeSoundSystem() {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                console.warn('⚠️ 사운드 시스템 초기화 타임아웃');
+                resolve(); // 타임아웃되어도 앱은 계속 실행
+            }, 8000);
+
+            if (window.drumSounds) {
+                // 사운드 시스템이 이미 초기화된 경우
+                if (window.drumSounds.isReadySync && window.drumSounds.isReadySync()) {
+                    clearTimeout(timeout);
+                    resolve();
+                    return;
+                }
+
+                // 사운드 시스템 초기화 대기
+                const checkReady = () => {
+                    if (window.drumSounds.isReadySync && window.drumSounds.isReadySync()) {
+                        clearTimeout(timeout);
+                        resolve();
+                    } else {
+                        setTimeout(checkReady, 100);
+                    }
+                };
+
+                checkReady();
+            } else {
+                // DrumSounds가 없는 경우 대체 초기화
+                console.warn('⚠️ DrumSounds 인스턴스가 없습니다. 기본 모드로 실행합니다.');
+                clearTimeout(timeout);
+                resolve();
+            }
+        });
     }
 
     // 시퀀서 초기화
@@ -574,39 +646,54 @@ class BeatDrumApp {
 
     // 에러 메시지 표시
     showError(message) {
-        // 간단한 에러 알림 (향후 더 세련된 UI로 개선 가능)
+        // 모바일 친화적 에러 알림
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
+        
+        const isMobile = window.innerWidth <= 768;
+        
         errorDiv.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: ${isMobile ? '10px' : '20px'};
+            left: ${isMobile ? '10px' : 'auto'};
+            right: ${isMobile ? '10px' : '20px'};
             background: #f44336;
             color: white;
-            padding: 15px 20px;
+            padding: ${isMobile ? '12px 15px' : '15px 20px'};
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
             z-index: 10000;
-            max-width: 300px;
-            font-size: 14px;
+            max-width: ${isMobile ? 'calc(100% - 20px)' : '300px'};
+            font-size: ${isMobile ? '13px' : '14px'};
+            line-height: 1.4;
+            text-align: center;
         `;
-        errorDiv.textContent = message;
+
+        // 메시지와 복구 버튼 추가
+        errorDiv.innerHTML = `
+            <div style="margin-bottom: 10px;">${message}</div>
+            <button onclick="this.parentElement.remove(); window.location.reload();" 
+                    style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); 
+                           color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; 
+                           cursor: pointer; margin-right: 8px; min-height: 32px;">
+                🔄 다시 시도
+            </button>
+            <button onclick="this.parentElement.remove();" 
+                    style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); 
+                           color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; 
+                           cursor: pointer; min-height: 32px;">
+                ✕ 닫기
+            </button>
+        `;
 
         document.body.appendChild(errorDiv);
 
-        // 5초 후 자동 제거
+        // 10초 후 자동 제거 (모바일에서 더 오래 표시)
         setTimeout(() => {
             if (errorDiv.parentNode) {
                 errorDiv.parentNode.removeChild(errorDiv);
             }
-        }, 5000);
-
-        // 클릭 시 제거
-        errorDiv.addEventListener('click', () => {
-            if (errorDiv.parentNode) {
-                errorDiv.parentNode.removeChild(errorDiv);
-            }
-        });
+        }, isMobile ? 10000 : 7000);
     }
 
     // 정보 메시지 표시
@@ -713,5 +800,66 @@ window.BeatDrumUtils = {
             console.log('샘플 레이트:', window.drumSounds.audioContext.sampleRate);
             console.log('현재 시간:', window.drumSounds.audioContext.currentTime);
         }
+    },
+
+    // 모바일 초기화 복구
+    recoverMobileInitialization: () => {
+        console.log('🔄 모바일 초기화 복구 시작...');
+        
+        try {
+            // 사운드 시스템 복구
+            if (window.drumSounds && typeof window.drumSounds.attemptRecovery === 'function') {
+                window.drumSounds.attemptRecovery();
+            }
+
+            // 애플리케이션 재초기화
+            if (window.app && typeof window.app.setup === 'function') {
+                window.app.setup().catch(error => {
+                    console.error('❌ 복구 중 오류:', error);
+                });
+            }
+
+            return true;
+        } catch (error) {
+            console.error('❌ 모바일 초기화 복구 실패:', error);
+            return false;
+        }
     }
 };
+
+// 모바일 환경에서 추가적인 초기화 보장
+document.addEventListener('DOMContentLoaded', () => {
+    // 모바일 디바이스 감지
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        console.log('📱 모바일 환경에서 추가 초기화 진행');
+        
+        // 터치 이벤트를 통한 AudioContext 활성화
+        const activateAudio = () => {
+            if (window.drumSounds && window.drumSounds.audioContext) {
+                if (window.drumSounds.audioContext.state === 'suspended') {
+                    window.drumSounds.audioContext.resume().then(() => {
+                        console.log('🎵 모바일에서 AudioContext 활성화됨');
+                    });
+                }
+            }
+        };
+
+        // 첫 터치 시 오디오 활성화
+        document.addEventListener('touchstart', activateAudio, { once: true });
+        document.addEventListener('touchend', activateAudio, { once: true });
+        
+        // 페이지 가시성 변경 감지
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                // 페이지가 다시 보일 때 오디오 복구 시도
+                setTimeout(() => {
+                    if (window.drumSounds && typeof window.drumSounds.resumeAudioContext === 'function') {
+                        window.drumSounds.resumeAudioContext();
+                    }
+                }, 100);
+            }
+        });
+    }
+});
