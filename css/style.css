@@ -13,6 +13,9 @@ body {
     color: #ffffff;
     min-height: 100vh;
     padding: 20px;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 .container {
@@ -977,8 +980,14 @@ body {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
     .container {
         padding: 15px;
+        max-width: 100%;
+        margin: 0 auto;
     }
 
     .title {
@@ -1050,14 +1059,25 @@ body {
     .track-label {
         width: auto;
         justify-content: space-between;
+        margin-bottom: 8px;
     }
 
     .track-name {
-        font-size: 12px;
+        font-size: 14px;
+    }
+
+    .track .steps {
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        gap: 3px;
+        width: 100%;
     }
 
     .step {
-        min-height: 30px;
+        min-height: 35px;
+        min-width: 18px;
+        aspect-ratio: 1;
+        border-radius: 6px;
     }
 
     .tempo-control {
@@ -1092,25 +1112,47 @@ body {
         font-size: 1.2rem;
     }
 
-    /* 12트랙 컨테이너 스크롤 가능하게 */
+    /* 12트랙 컨테이너 스크롤 개선 */
     .sequencer {
-        max-height: 70vh;
+        max-height: 65vh;
         overflow-y: auto;
-        padding-right: 10px;
+        overflow-x: hidden;
+        padding-right: 8px;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
     }
 
     .sequencer::-webkit-scrollbar {
-        width: 6px;
+        width: 8px;
     }
 
     .sequencer::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.1);
-        border-radius: 3px;
+        border-radius: 4px;
     }
 
     .sequencer::-webkit-scrollbar-thumb {
-        background: rgba(78, 205, 196, 0.6);
-        border-radius: 3px;
+        background: rgba(78, 205, 196, 0.7);
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sequencer::-webkit-scrollbar-thumb:hover {
+        background: rgba(78, 205, 196, 0.9);
+    }
+
+    /* 스텝 넘버 모바일 최적화 */
+    .step-numbers .steps {
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        gap: 3px;
+        width: 100%;
+    }
+
+    .step-number {
+        font-size: 10px;
+        padding: 4px 1px;
+        text-align: center;
     }
 }
 
@@ -1124,14 +1166,56 @@ body {
         font-size: 12px;
     }
 
+    /* 소형 모바일에서 시퀀서 최적화 */
+    .sequencer {
+        max-height: 60vh;
+        padding-right: 5px;
+    }
+
+    .track {
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+
+    .track .steps {
+        grid-template-columns: repeat(16, 1fr);
+        gap: 2px;
+    }
+
     .step {
-        min-height: 30px;
-        border-radius: 5px;
+        min-height: 32px;
+        min-width: 16px;
+        border-radius: 4px;
+        border-width: 1px;
+    }
+
+    .step-numbers .steps {
+        grid-template-columns: repeat(16, 1fr);
+        gap: 2px;
     }
 
     .step-number {
-        font-size: 10px;
-        padding: 5px 2px;
+        font-size: 9px;
+        padding: 3px 1px;
+    }
+
+    .track-name {
+        font-size: 13px;
+    }
+
+    /* 터치 영역 확대를 위한 패딩 */
+    .step {
+        position: relative;
+    }
+
+    .step::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        z-index: -1;
     }
 }
 
