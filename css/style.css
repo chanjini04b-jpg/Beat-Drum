@@ -74,6 +74,33 @@ button,
     }
 }
 
+/* 모바일에서 12개 트랙 표시 보장 */
+@media (max-width: 768px) and (orientation: portrait) {
+    .sequencer {
+        min-height: 70vh !important;
+        max-height: 95vh !important;
+    }
+    
+    .track {
+        flex-shrink: 0; /* 트랙이 축소되지 않도록 */
+    }
+}
+
+@media (max-width: 480px) and (orientation: portrait) {
+    .sequencer {
+        min-height: 65vh !important;
+        max-height: 90vh !important;
+    }
+}
+
+/* 가로 모드에서 더 많은 공간 활용 */
+@media (max-width: 768px) and (orientation: landscape) {
+    .sequencer {
+        min-height: 80vh !important;
+        max-height: 95vh !important;
+    }
+}
+
 /* 접근성 개선 */
 @media (prefers-reduced-motion: reduce) {
     * {
@@ -1288,6 +1315,8 @@ body {
         padding: 12px;
         max-width: 100%;
         margin: 0 auto;
+        min-height: auto; /* 높이 제한 제거 */
+        height: auto; /* 자동 높이 */
     }
 
     /* 히어로 섹션 모바일 최적화 */
@@ -1411,15 +1440,16 @@ body {
 
     .track {
         flex-direction: column;
-        gap: 6px;
-        padding: 8px;
-        margin-bottom: 5px;
+        gap: 4px; /* 간격 줄임 */
+        padding: 6px; /* 패딩 줄임 */
+        margin-bottom: 3px; /* 마진 줄임 */
     }
 
     .track-label {
         width: auto;
         justify-content: space-between;
-        margin-bottom: 5px;
+        margin-bottom: 3px; /* 마진 줄임 */
+        min-height: 32px; /* 최소 높이 설정 */
     }
 
     .track-name {
@@ -1482,41 +1512,45 @@ body {
 
     /* 12트랙 컨테이너 스크롤 개선 */
     .sequencer {
-        max-height: 85vh;
+        max-height: 90vh; /* 높이를 더 확장 */
         overflow-y: auto;
         overflow-x: hidden;
         padding-right: 12px;
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
-        min-height: 500px; /* 12개 트랙을 위한 충분한 높이 */
+        min-height: 600px; /* 12개 트랙을 위한 더 충분한 높이 */
+        height: auto; /* 자동 높이 설정 */
         scrollbar-width: thin;
         scrollbar-color: #4ecdc4 rgba(255, 255, 255, 0.15);
     }
 
     .sequencer::-webkit-scrollbar {
-        width: 12px;
+        width: 14px; /* 스크롤바를 더 넓게 */
     }
 
     .sequencer::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.15);
-        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.2); /* 트랙을 더 밝게 */
+        border-radius: 7px;
         margin: 8px 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .sequencer::-webkit-scrollbar-thumb {
         background: linear-gradient(180deg, #4ecdc4, #44a08d);
-        border-radius: 6px;
+        border-radius: 7px;
         border: 2px solid rgba(30, 30, 30, 0.3);
-        box-shadow: 0 2px 10px rgba(78, 205, 196, 0.3);
+        box-shadow: 0 2px 12px rgba(78, 205, 196, 0.4);
+        min-height: 40px; /* 최소 높이 설정 */
     }
 
     .sequencer::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(180deg, #5fd9d1, #4bb5a3);
-        box-shadow: 0 4px 15px rgba(78, 205, 196, 0.5);
+        box-shadow: 0 4px 16px rgba(78, 205, 196, 0.6);
     }
 
     .sequencer::-webkit-scrollbar-thumb:active {
         background: linear-gradient(180deg, #3fc2ba, #359287);
+        box-shadow: 0 2px 8px rgba(78, 205, 196, 0.8);
     }
 
     /* 스텝 넘버 모바일 최적화 */
@@ -1541,6 +1575,8 @@ body {
     
     .container {
         padding: 8px;
+        min-height: auto; /* 높이 제한 제거 */
+        height: auto; /* 자동 높이 */
     }
 
     .title {
@@ -1555,37 +1591,42 @@ body {
 
     /* 소형 모바일에서 시퀀서 최적화 */
     .sequencer {
-        max-height: 80vh;
+        max-height: 85vh; /* 소형 모바일에서도 더 높은 높이 */
         padding-right: 10px;
-        min-height: 450px; /* 소형 모바일에서도 12개 트랙 표시 가능한 높이 */
+        min-height: 550px; /* 소형 모바일에서도 12개 트랙 표시 가능한 더 높은 높이 */
+        height: auto; /* 자동 높이 설정 */
         scrollbar-width: thin;
         scrollbar-color: #4ecdc4 rgba(255, 255, 255, 0.1);
     }
 
     .sequencer::-webkit-scrollbar {
-        width: 10px;
+        width: 12px; /* 소형 모바일에서도 충분한 너비 */
     }
 
     .sequencer::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.15); /* 더 밝게 */
+        border-radius: 6px;
         margin: 5px 0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .sequencer::-webkit-scrollbar-thumb {
         background: linear-gradient(180deg, #4ecdc4, #44a08d);
-        border-radius: 5px;
+        border-radius: 6px;
         border: 1px solid rgba(30, 30, 30, 0.2);
+        min-height: 30px; /* 최소 높이 설정 */
+        box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3);
     }
 
     .sequencer::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(180deg, #5fd9d1, #4bb5a3);
+        box-shadow: 0 3px 12px rgba(78, 205, 196, 0.5);
     }
 
     .track {
-        padding: 5px;
-        margin-bottom: 3px;
-        gap: 4px;
+        padding: 4px; /* 더 컴팩트하게 */
+        margin-bottom: 2px; /* 마진 더 줄임 */
+        gap: 3px; /* 간격 더 줄임 */
     }
 
     .track-name {
@@ -1594,9 +1635,9 @@ body {
     }
 
     .track-label {
-        margin-bottom: 3px;
-        min-height: auto;
-        gap: 8px;
+        margin-bottom: 2px; /* 마진 더 줄임 */
+        min-height: 28px; /* 더 컴팩트한 높이 */
+        gap: 6px; /* 간격 줄임 */
     }
 
     .track-play-btn {
