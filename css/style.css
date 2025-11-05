@@ -1254,8 +1254,8 @@ body {
 
     /* 히어로 섹션 모바일 최적화 */
     .hero-header {
-        padding: 30px 15px;
-        margin-bottom: 30px;
+        padding: 25px 15px;
+        margin-bottom: 20px;
     }
 
     .hero-title {
@@ -1373,19 +1373,26 @@ body {
 
     .track {
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
         padding: 8px;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
     }
 
     .track-label {
         width: auto;
         justify-content: space-between;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
     }
 
     .track-name {
         font-size: 13px;
+        font-weight: 600;
+    }
+
+    .track-play-btn {
+        font-size: 14px;
+        padding: 4px 6px;
+        min-width: 28px;
     }
 
     .track .steps {
@@ -1396,10 +1403,11 @@ body {
     }
 
     .step {
-        min-height: 32px;
+        min-height: 30px;
         min-width: 16px;
         aspect-ratio: 1;
-        border-radius: 5px;
+        border-radius: 4px;
+        border-width: 2px;
     }
 
     .tempo-control {
@@ -1436,32 +1444,41 @@ body {
 
     /* 12트랙 컨테이너 스크롤 개선 */
     .sequencer {
-        max-height: 75vh;
+        max-height: 85vh;
         overflow-y: auto;
         overflow-x: hidden;
-        padding-right: 8px;
+        padding-right: 12px;
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
-        min-height: 400px; /* 최소 높이 보장 */
+        min-height: 500px; /* 12개 트랙을 위한 충분한 높이 */
+        scrollbar-width: thin;
+        scrollbar-color: #4ecdc4 rgba(255, 255, 255, 0.15);
     }
 
     .sequencer::-webkit-scrollbar {
-        width: 8px;
+        width: 12px;
     }
 
     .sequencer::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        margin: 8px 0;
     }
 
     .sequencer::-webkit-scrollbar-thumb {
-        background: rgba(78, 205, 196, 0.7);
-        border-radius: 4px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: linear-gradient(180deg, #4ecdc4, #44a08d);
+        border-radius: 6px;
+        border: 2px solid rgba(30, 30, 30, 0.3);
+        box-shadow: 0 2px 10px rgba(78, 205, 196, 0.3);
     }
 
     .sequencer::-webkit-scrollbar-thumb:hover {
-        background: rgba(78, 205, 196, 0.9);
+        background: linear-gradient(180deg, #5fd9d1, #4bb5a3);
+        box-shadow: 0 4px 15px rgba(78, 205, 196, 0.5);
+    }
+
+    .sequencer::-webkit-scrollbar-thumb:active {
+        background: linear-gradient(180deg, #3fc2ba, #359287);
     }
 
     /* 스텝 넘버 모바일 최적화 */
@@ -1500,28 +1517,55 @@ body {
 
     /* 소형 모바일에서 시퀀서 최적화 */
     .sequencer {
-        max-height: 70vh;
-        padding-right: 5px;
-        min-height: 350px; /* 소형 모바일에서도 최소 높이 보장 */
+        max-height: 80vh;
+        padding-right: 10px;
+        min-height: 450px; /* 소형 모바일에서도 12개 트랙 표시 가능한 높이 */
+        scrollbar-width: thin;
+        scrollbar-color: #4ecdc4 rgba(255, 255, 255, 0.1);
+    }
+
+    .sequencer::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .sequencer::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        margin: 5px 0;
+    }
+
+    .sequencer::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #4ecdc4, #44a08d);
+        border-radius: 5px;
+        border: 1px solid rgba(30, 30, 30, 0.2);
+    }
+
+    .sequencer::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #5fd9d1, #4bb5a3);
     }
 
     .track {
-        padding: 6px;
-        margin-bottom: 4px;
+        padding: 5px;
+        margin-bottom: 3px;
+        gap: 4px;
     }
 
     .track-name {
-        font-size: 12px;
+        font-size: 11px;
+        font-weight: 600;
     }
 
     .track-label {
-        margin-bottom: 4px;
+        margin-bottom: 3px;
         min-height: auto;
+        gap: 8px;
     }
 
     .track-play-btn {
-        font-size: 12px;
+        font-size: 11px;
         padding: 2px 4px;
+        min-width: 24px;
+        border-radius: 4px;
     }
 
     .track .steps {
@@ -1530,8 +1574,8 @@ body {
     }
 
     .step {
-        min-height: 28px;
-        min-width: 14px;
+        min-height: 26px;
+        min-width: 13px;
         border-radius: 3px;
         border-width: 1px;
     }
@@ -1552,7 +1596,8 @@ body {
 
     /* 히어로 섹션 소형 모바일 최적화 */
     .hero-header {
-        padding: 20px 10px;
+        padding: 15px 8px;
+        margin-bottom: 15px;
     }
 
     .hero-icon {
